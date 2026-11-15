@@ -78,6 +78,10 @@ RUN jq --arg version "$OPENCODE_VERSION" '.opencode[] | select(.version == $vers
         --revision="refs/tags/v${OPENCODE_VERSION}" "$(jq -r .repository opencode.json).git" source \
     && sh verify.sh
 
+# npm packages raised for a known vulnerability, see PATCHES.md
+COPY --chmod=0644 patche[s]/dependencies.patch ./
+RUN if [ -f dependencies.patch ]; then git -C source apply --verbose /src/dependencies.patch; fi
+
 WORKDIR /src/source
 RUN bun install --frozen-lockfile
 
