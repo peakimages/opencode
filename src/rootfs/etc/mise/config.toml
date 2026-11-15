@@ -1,0 +1,4 @@
+[settings]
+all_compile = false
+not_found_auto_install_registry = true
+auto_install_disable_tools = ["deno", "graalvm", "jreleaser", "ruby"]
