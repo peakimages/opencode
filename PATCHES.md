@@ -37,7 +37,7 @@ Every package manager runs in the image of its `ARG` in `src/Dockerfile`, nothin
 2. Build the image and test it:
 
    ```sh
-   docker buildx build --load --tag peakimages/opencode:local src && scripts/test.sh peakimages/opencode:local
+   scripts/build.sh && scripts/test.sh peakimages/opencode:local
    ```
 
 3. Commit `src/patches/dependencies.patch` and release a patch version of the image
