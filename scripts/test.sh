@@ -59,8 +59,8 @@ check_refusals() {
 	docker run --rm --platform "$platform" -e OPENCODE_PASSWORD=hunter2 "$IMAGE" > /dev/null 2>&1 && die "the server started with a password of 7 characters"
 	docker run --rm --platform "$platform" -e OPENCODE_PORT=0 "$IMAGE" > /dev/null 2>&1 && die "the server started with OPENCODE_PORT=0"
 	docker run --rm --platform "$platform" --read-only --tmpfs /home/nonroot:uid=65532,gid=65532 --tmpfs /tmp "$IMAGE" > /dev/null 2>&1 \
-		&& die "the server started with /tmp mounted noexec"
-	ok "refuses to start with a short password, an invalid port or a /tmp it cannot execute from"
+		&& die "the server started with /tmp and /home/nonroot mounted noexec"
+	ok "refuses to start with a short password, an invalid port or no directory to run temporary files from"
 }
 
 start_container() {
@@ -123,23 +123,25 @@ check_generated_password() {
 check_password_file() {
 	printf '%s' "$PASSWORD" > "$WORK_DIR/password"
 	chmod 0444 "$WORK_DIR/password"
-	docker run -d --name "$CONTAINER-file" --platform "$platform" --network none -v "$WORK_DIR/password:/run/secrets/password:ro" \
-		-e OPENCODE_PASSWORD_FILE=/run/secrets/password --health-interval 2s --health-start-period 1s "$IMAGE" > /dev/null
+	docker run -d --name "$CONTAINER-file" --platform "$platform" --network none --read-only --tmpfs /home/nonroot:uid=65532,gid=65532,exec \
+		-v "$WORK_DIR/password:/run/secrets/password:ro" -e OPENCODE_PASSWORD_FILE=/run/secrets/password \
+		--health-interval 2s --health-start-period 1s "$IMAGE" > /dev/null
 	wait_healthy "$CONTAINER-file"
 	[ "$(docker exec "$CONTAINER-file" opencode service get password)" = "$PASSWORD" ] || die "the server does not use the password of OPENCODE_PASSWORD_FILE"
+	docker exec "$CONTAINER-file" sh -c 'ls /home/nonroot/.tmp/.bun-*.so' > /dev/null || die "the server did not unpack its libraries into /home/nonroot/.tmp with a read-only /tmp"
 	docker rm -f "$CONTAINER-file" > /dev/null
-	ok "OPENCODE_PASSWORD_FILE sets the password, and the server starts without a network"
+	ok "OPENCODE_PASSWORD_FILE sets the password, and the server and docker exec work without a network and with a read-only /tmp, from /home/nonroot/.tmp"
 }
 
 check_shell() {
 	local output
 	output="$(shell 'printenv SHELL; pwd; grep -oP "a\d" <<< a1; git init -q repo && cd repo && echo text > file && git add file && git -c user.name=test -c user.email=test@example.com commit -q -m test && rg -c text file')"
 	[ "$output" = $'/bin/bash\n/home/nonroot\na1\n1' ] || die "a shell command reports '$output', expected bash in /home/nonroot, GNU grep, git and rg"
-	output="$(shell 'mktemp | xargs -I {} sh -c "printf \"#!/usr/bin/env bash\necho ran\n\" > {} && chmod +x {} && {} && dirname {}"')"
-	[ "$output" = $'ran\n/tmp' ] || die "a script in a temporary file reports '$output', expected it to run from /tmp"
+	output="$(shell 'readlink /home/nonroot/.tmp; mktemp | xargs -I {} sh -c "printf \"#!/usr/bin/env bash\necho ran\n\" > {} && chmod +x {} && {}"')"
+	[ "$output" = $'/tmp\nran' ] || die "a script in a temporary file reports '$output', expected it to run from TMPDIR, a link to /tmp"
 	output="$(shell 'printf "protocol=https\nhost=github.com\n" | GH_TOKEN=token git credential fill | grep password')"
 	[ "$output" = password=token ] || die "git asks gh for the credentials of github.com and gets '$output', expected the token of GH_TOKEN"
-	ok "the agent runs shell commands in bash in /home/nonroot with GNU grep, git and rg, runs scripts from /tmp and git signs in to github.com with GH_TOKEN"
+	ok "the agent runs shell commands in bash in /home/nonroot with GNU grep, git and rg, runs scripts from TMPDIR, a link to /tmp, and git signs in to github.com with GH_TOKEN"
 }
 
 check_mise() {

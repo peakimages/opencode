@@ -2,6 +2,7 @@
 set -eu
 
 DATA_DIR=/home/nonroot
+TEMP_DIR="$DATA_DIR/.tmp"
 MIN_PASSWORD_LENGTH=32
 
 die() {
@@ -11,11 +12,15 @@ die() {
 
 main() {
 	[ "$#" -gt 0 ] || set -- serve
-	[ "$1" = serve ] || run "$@"
+	if [ "$1" != serve ]; then
+		[ -e "$TEMP_DIR" ] || create_temp_dir > /dev/null 2>&1 || true
+		run "$@"
+	fi
 	shift
 	[ -w "$DATA_DIR" ] || die "$DATA_DIR is not writable by $(id -u):$(id -g), expected a volume owned by 65532:65532"
 	check_port
-	check_temp_dir
+	clear_temp_dir
+	create_temp_dir || die "neither /tmp nor $DATA_DIR can write and run a file, expected one of them without noexec"
 	store_password
 	exec opencode serve --service --hostname 0.0.0.0 --port "$OPENCODE_PORT" "$@"
 }
@@ -36,12 +41,26 @@ check_port() {
 	die "OPENCODE_PORT must be a port from 1 to 65535, not '$OPENCODE_PORT'"
 }
 
-check_temp_dir() {
-	probe="${TMPDIR:-/tmp}/.docker-entrypoint"
-	printf '#!/bin/sh\n' 2> /dev/null > "$probe" || die "${TMPDIR:-/tmp} is not writable by $(id -u):$(id -g), expected a tmpfs mount such as --tmpfs /tmp:exec with a read-only root filesystem"
-	chmod 0700 "$probe"
-	"$probe" 2> /dev/null || die "${TMPDIR:-/tmp} is mounted noexec, expected a mount that allows execution such as --tmpfs /tmp:exec, OpenCode loads the libraries of its terminals and its file watcher from there"
+clear_temp_dir() {
+	rm -rf "$TEMP_DIR"
+}
+
+create_temp_dir() {
+	if can_execute_in /tmp; then
+		ln -s /tmp "$TEMP_DIR"
+		return
+	fi
+	mkdir -m 0700 "$TEMP_DIR" || return
+	can_execute_in "$TEMP_DIR" || return
+	echo "docker-entrypoint: /tmp is read-only or mounted noexec, temporary files go to $TEMP_DIR, which is cleared on every start"
+}
+
+can_execute_in() {
+	probe="$1/.docker-entrypoint"
+	{ printf '#!/bin/sh\n' > "$probe" && chmod 0700 "$probe" && "$probe"; } 2> /dev/null
+	status=$?
 	rm -f "$probe"
+	return "$status"
 }
 
 store_password() {

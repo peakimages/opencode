@@ -195,13 +195,13 @@ OpenCode reads its own variables, the most important ones on a server:
 | `GH_TOKEN`                            | unset   | Token for `gh`, `git` uses it for `https://github.com` as well                                               |
 | `MISE_GITHUB_TOKEN`                   | unset   | Token mise asks GitHub with, without one GitHub answers 60 requests per hour                                 |
 
-| Path                                           | Holds                                                                           |
-| ---------------------------------------------- | ------------------------------------------------------------------------------- |
-| `/home/nonroot`                                | Repositories, sessions and every installed tool. A volume owned by `65532`      |
-| `/tmp`                                         | Temporary files, a tmpfs that allows execution with a read-only root filesystem |
-| `/home/nonroot/.config/opencode/opencode.json` | Your [configuration](https://opencode.ai/v2/docs/config)                        |
-| `/etc/opencode/opencode.json`                  | System configuration, it outranks every other                                   |
-| `/etc/mise/config.toml`                        | Settings of mise                                                                |
+| Path                                           | Holds                                                                                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `/home/nonroot`                                | Repositories, sessions and every installed tool. A volume owned by `65532`                                               |
+| `/home/nonroot/.tmp`                           | Temporary files, `TMPDIR`. A link to `/tmp`, or a directory cleared on every start while `/tmp` is read-only or `noexec` |
+| `/home/nonroot/.config/opencode/opencode.json` | Your [configuration](https://opencode.ai/v2/docs/config)                                                                 |
+| `/etc/opencode/opencode.json`                  | System configuration, it outranks every other                                                                            |
+| `/etc/mise/config.toml`                        | Settings of mise                                                                                                         |
 
 ### Custom Image
 

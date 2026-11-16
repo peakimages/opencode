@@ -177,6 +177,7 @@ ENV PATH=/home/nonroot/.local/share/mise/shims:/home/nonroot/.local/bin:/usr/loc
     BASH_ENV=/etc/bash/mise.sh \
     HOME=/home/nonroot \
     SHELL=/bin/bash \
+    TMPDIR=/home/nonroot/.tmp \
     BUN_RUNTIME_TRANSPILER_CACHE_PATH=0 \
     OPENCODE_DISABLE_AUTOUPDATE=1 \
     OPENCODE_PORT=4096
