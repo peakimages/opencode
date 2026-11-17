@@ -10,7 +10,7 @@ Report a vulnerability to the project that maintains the affected code:
 - **OpenCode** is maintained at [anomalyco/opencode](https://github.com/anomalyco/opencode). Report it to the OpenCode team, see its [security policy](https://github.com/anomalyco/opencode/security/policy). Every OpenCode release becomes a new image, usually within a day.
 - **Bun** is the runtime inside the `opencode` binary. Report it to Bun, see its [security policy](https://github.com/oven-sh/bun/security/policy), the fix reaches the image with the OpenCode release that upgrades it.
 - **mise** is maintained at [jdx/mise](https://github.com/jdx/mise). Report it to mise, see its [security policy](https://github.com/jdx/mise/security/policy), the fix reaches the image with its next release.
-- **Alpine and its packages**, such as `git`, `bash`, `gh` and BusyBox, are pinned in the Dockerfile. Report it to Alpine or the upstream project, the fix reaches the image with its next release.
+- **Alpine, its packages and gh** are pinned in the Dockerfile. Report it to them, the fix reaches the image with its next release.
 
 The agent runs shell commands for whoever signs in and is not sandboxed, that is how OpenCode works and that is not a vulnerability of this image.
 

@@ -11,6 +11,7 @@ die() {
 main() {
 	install_packages
 	install_opencode
+	install_github_cli
 	install_mise
 	create_user
 	create_directories
@@ -26,8 +27,7 @@ install_packages() {
 		"ca-certificates-bundle=$CA_CERTIFICATES_VERSION" "tini=$TINI_VERSION" "coreutils=$COREUTILS_VERSION" "findutils=$FINDUTILS_VERSION" \
 		"grep=$GREP_VERSION" "sed=$SED_VERSION" "tar=$TAR_VERSION" "xz=$XZ_VERSION" "zstd=$ZSTD_VERSION" "unzip=$UNZIP_VERSION" \
 		"curl=$CURL_VERSION" "openssh-client-default=$OPENSSH_VERSION" "openssh-keygen=$OPENSSH_VERSION" \
-		"jq=$JQ_VERSION" "make=$MAKE_VERSION" "gcc=$GCC_VERSION" "musl-dev=$MUSL_VERSION" "musl-utils=$MUSL_VERSION" \
-		"github-cli=$GITHUB_CLI_VERSION"
+		"jq=$JQ_VERSION" "make=$MAKE_VERSION" "gcc=$GCC_VERSION" "musl-dev=$MUSL_VERSION" "musl-utils=$MUSL_VERSION"
 	apk add --no-cache --no-scripts --initdb --root "$ROOT_DIR" --keys-dir /etc/apk/keys --repositories-file /etc/apk/repositories "$@" > /dev/null
 }
 
@@ -35,6 +35,17 @@ install_opencode() {
 	install -D -m 0755 /src/opencode "$ROOT_DIR/usr/local/bin/opencode"
 	reported="$(HOME=/tmp "$ROOT_DIR/usr/local/bin/opencode" --version)"
 	[ "$reported" = "opencode v$OPENCODE_VERSION" ] || die "opencode reports '$reported', expected 'opencode v$OPENCODE_VERSION'"
+}
+
+install_github_cli() {
+	asset="gh_${GITHUB_CLI_VERSION}_linux_arm64" sha256="$GITHUB_CLI_ARM64_SHA256"
+	[ "$TARGETARCH" != amd64 ] || asset="gh_${GITHUB_CLI_VERSION}_linux_amd64" sha256="$GITHUB_CLI_AMD64_SHA256"
+	wget -q -O /src/gh.tar.gz "https://github.com/cli/cli/releases/download/v$GITHUB_CLI_VERSION/$asset.tar.gz" || die "$asset.tar.gz could not be downloaded"
+	[ "$(sha256sum /src/gh.tar.gz | cut -d ' ' -f 1)" = "$sha256" ] || die "SHA-256 of $asset.tar.gz does not match the one src/Dockerfile pins"
+	tar -xzf /src/gh.tar.gz -C /src "$asset/bin/gh"
+	install -D -m 0755 "/src/$asset/bin/gh" "$ROOT_DIR/usr/local/bin/gh"
+	reported="$("$ROOT_DIR/usr/local/bin/gh" --version | head -n 1)"
+	[ "$(echo "$reported" | cut -d ' ' -f 3)" = "$GITHUB_CLI_VERSION" ] || die "gh reports '$reported', expected $GITHUB_CLI_VERSION"
 }
 
 install_mise() {
