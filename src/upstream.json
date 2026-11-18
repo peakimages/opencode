@@ -1,9 +1,9 @@
 {
 	"opencode": {
 		"latest": {
-			"version": "2.3.1",
+			"version": "2.3.2",
 			"repository": "https://github.com/anomalyco/opencode",
-			"commit": "c769de83007e3584b5b395176c9fcde2d3231e88",
+			"commit": "c0ad18b402eb2827fc1ee71c171b1177b3fc02d1",
 			"bun": "1.4.4"
 		}
 	}
