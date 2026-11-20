@@ -156,10 +156,14 @@ check_mise() {
 }
 
 check_terminal() {
-	local status
+	local status watcher=""
 	status="$(api POST /api/pty '{}' | jq -r .data.status)"
 	[ "$status" = running ] || die "a terminal is '$status', expected running"
-	docker exec "$CONTAINER" sh -c 'grep -q "watcher started.*backend=inotify" ~/.local/share/opencode/log/*' || die "the file watcher did not start with inotify"
+	for _ in $(seq 10); do
+		docker exec "$CONTAINER" sh -c 'grep -q "watcher started.*backend=inotify" ~/.local/share/opencode/log/*' && watcher=started && break
+		sleep 1
+	done
+	[ -n "$watcher" ] || die "the file watcher did not start with inotify within 10 seconds"
 	ok "a terminal starts and the file watcher runs on inotify"
 }
 
