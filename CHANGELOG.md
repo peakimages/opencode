@@ -19,4 +19,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - mise installs the tools of a project into `/home/nonroot` on their first use or from its `mise.toml`
   - A patch can raise npm packages with a known vulnerability before OpenCode does
   - The platforms are `amd64` and `arm64`
-
