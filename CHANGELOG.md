@@ -1,12 +1,24 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. OpenCode version bumps are not listed, every release tag names the OpenCode version it ships.
+All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [v0.1.0] - 2026-11-17
+## [v2.3.2-v0.1.0] - 2026-11-18
+
+### Changed
+
+- OpenCode from v2.3.1 to v2.3.2, see its [release notes](https://github.com/anomalyco/opencode/releases/tag/v2.3.2)
+
+## [v2.3.1-v0.1.0] - 2026-11-18
+
+### Changed
+
+- OpenCode from v2.3.0 to v2.3.1, see its [release notes](https://github.com/anomalyco/opencode/releases/tag/v2.3.1)
+
+## [v2.3.0-v0.1.0] - 2026-11-17
 
 ### Added
 
