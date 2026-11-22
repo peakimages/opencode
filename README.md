@@ -248,7 +248,7 @@ trivy image peakimages/opencode:latest
 
 Every OpenCode release becomes a new version of the image. A check for new OpenCode releases runs twice a day.
 
-The image version follows semantic versioning independently of OpenCode. Changes to the image are listed in [CHANGELOG.md](CHANGELOG.md).
+The image version follows semantic versioning independently of OpenCode, a tag is `<OpenCode version>-v<image version>`, such as `2.3.2-v0.1.0`. Every release is listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Trademarks
 

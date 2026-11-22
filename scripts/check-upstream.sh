@@ -4,6 +4,8 @@ set -euo pipefail
 OPTION="$*"
 REPOSITORY=anomalyco/opencode
 BUN_IMAGE=oven/bun
+BODY_FILE="${BODY_FILE:-/dev/null}"
+VERSION_FILE=release.json
 WORK_DIR="$(mktemp -d)"
 
 BOLD=$'\033[1m' BLUE=$'\033[34m' GREEN=$'\033[32m' RED=$'\033[31m' RESET=$'\033[0m'
@@ -25,6 +27,8 @@ main() {
 	read_bun_image
 	write_upstream_json
 	update_dockerfile
+	write_notes
+	update_changelog
 }
 
 read_newest_release() {
@@ -71,6 +75,33 @@ update_dockerfile() {
 		-e "s|^# https://hub.docker.com/r/$BUN_IMAGE/tags.*|# https://hub.docker.com/r/$BUN_IMAGE/tags?name=$bun-alpine|" src/Dockerfile > "$WORK_DIR/Dockerfile"
 	cp "$WORK_DIR/Dockerfile" src/Dockerfile
 	ok "src/Dockerfile sets OPENCODE_VERSION $BOLD$version$RESET and the image of Bun $bun"
+}
+
+write_notes() {
+	local notes="https://github.com/anomalyco/opencode/releases/tag/v$version"
+	printf -- '### Changed\n\n- OpenCode from v%s to v%s, see its [release notes](%s)\n' "$pinned" "$version" "$notes" > "$WORK_DIR/notes.md"
+	printf -- '## Changes\n\n- Bump OpenCode version from v%s to v%s, see its [release notes](%s)\n' "$pinned" "$version" "$notes" > "$BODY_FILE"
+}
+
+update_changelog() {
+	local branch tag
+	branch="$(git branch --show-current)"
+	if [[ "$branch" =~ ^(next|release/v[0-9]+\.[0-9]+)$ ]]; then
+		info "$branch publishes prereleases only, the next one ships OpenCode $version"
+		return
+	fi
+	tag="v$version-v$(jq -r .stable.image "$VERSION_FILE")"
+	awk -v heading="## [$tag] - $(date +%Y-%m-%d)" -v notes="$WORK_DIR/notes.md" '
+		/^## \[v/ && !added {
+			print heading "\n"
+			while ((getline line < notes) > 0) print line
+			print ""
+			added = 1
+		}
+		1
+	' CHANGELOG.md > "$WORK_DIR/CHANGELOG.md"
+	cp "$WORK_DIR/CHANGELOG.md" CHANGELOG.md
+	ok "CHANGELOG.md lists OpenCode $version under $BOLD## [$tag]$RESET"
 }
 
 fetch() {
