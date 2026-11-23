@@ -27,13 +27,15 @@ main() {
 	read_bun_image
 	write_upstream_json
 	update_dockerfile
+	link_release_notes
 	write_notes
 	update_changelog
 }
 
 read_newest_release() {
-	version="$(gh api "repos/$REPOSITORY/releases?per_page=100" --jq '.[] | select((.draft or .prerelease) | not) | .tag_name' \
-		| sed -nE 's/^v([0-9]+\.[0-9]+\.[0-9]+)$/\1/p' | sort -V | tail -n 1)"
+	releases="$(gh api "repos/$REPOSITORY/releases?per_page=100" --jq '.[] | select((.draft or .prerelease) | not) | .tag_name' \
+		| sed -nE 's/^v([0-9]+\.[0-9]+\.[0-9]+)$/\1/p')"
+	version="$(sort -V <<< "$releases" | tail -n 1)"
 	[ -n "$version" ] || die "github.com/$REPOSITORY lists no release, expected a tag such as v2.3.0"
 	commit="$(gh api "repos/$REPOSITORY/commits/refs/tags/v$version" --jq .sha)"
 }
@@ -77,10 +79,23 @@ update_dockerfile() {
 	ok "src/Dockerfile sets OPENCODE_VERSION $BOLD$version$RESET and the image of Bun $bun"
 }
 
+link_release_notes() {
+	local skipped release
+	skipped="$(printf '%s\n' "$releases" "$pinned" "$version" | sort -Vu | awk -v from="$pinned" -v to="$version" '$0 == to { done = 1 } on && !done; $0 == from { on = 1 }')"
+	if [ -z "$skipped" ]; then
+		notes="its [release notes]($(notes_url "$version"))"
+		return
+	fi
+	notes="the release notes of "
+	for release in $skipped; do
+		notes+="[v$release]($(notes_url "$release")), "
+	done
+	notes="${notes%, } and [v$version]($(notes_url "$version"))"
+}
+
 write_notes() {
-	local notes="https://github.com/anomalyco/opencode/releases/tag/v$version"
-	printf -- '### Changed\n\n- OpenCode from v%s to v%s, see its [release notes](%s)\n' "$pinned" "$version" "$notes" > "$WORK_DIR/notes.md"
-	printf -- '## Changes\n\n- Bump OpenCode version from v%s to v%s, see its [release notes](%s)\n' "$pinned" "$version" "$notes" > "$BODY_FILE"
+	printf -- '### Changed\n\n- OpenCode from v%s to v%s, see %s\n' "$pinned" "$version" "$notes" > "$WORK_DIR/notes.md"
+	printf -- '## Changes\n\n- Bump OpenCode version from v%s to v%s, see %s\n' "$pinned" "$version" "$notes" > "$BODY_FILE"
 }
 
 update_changelog() {
@@ -103,6 +118,8 @@ update_changelog() {
 	cp "$WORK_DIR/CHANGELOG.md" CHANGELOG.md
 	ok "CHANGELOG.md lists OpenCode $version under $BOLD## [$tag]$RESET"
 }
+
+notes_url() { echo "https://github.com/$REPOSITORY/releases/tag/v$1"; }
 
 fetch() {
 	curl --proto '=https' --tlsv1.2 -sSf --retry 3 "https://raw.githubusercontent.com/$REPOSITORY/refs/tags/v$1/$2"
