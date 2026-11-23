@@ -24,7 +24,7 @@ The OpenCode server runs the agent and its shell commands, so the image around i
 - ✅ Batteries Included: `bash`, GNU tools, `git`, `gh`, `ripgrep`, `curl`, `jq`, `make`, `gcc` and an SSH client
 - ✅ Tools on Demand: mise installs languages and CLIs into the home volume without root, and they are kept across image updates
 - ✅ Modern Architecture: Native health check, `tini` init, OCI labels, reproducible builds, provenance and SBOM attestations
-- ✅ Always Current: GitHub is checked twice a day and new OpenCode releases become new images
+- ✅ Always Current: GitHub is checked every two hours and new OpenCode releases become new images
 - ✅ Multi-Architecture: Builds for `linux/amd64` and `linux/arm64`
 - ✅ Tested: Every release is tested on both platforms before it is published
 
@@ -246,7 +246,7 @@ trivy image peakimages/opencode:latest
 
 ## Releases
 
-Every OpenCode release becomes a new version of the image. A check for new OpenCode releases runs twice a day.
+Every OpenCode release becomes a new version of the image. A check for new OpenCode releases runs every two hours.
 
 The image version follows semantic versioning independently of OpenCode, a tag is `<OpenCode version>-v<image version>`, such as `2.3.2-v0.1.0`. Every release is listed in [CHANGELOG.md](CHANGELOG.md).
 
