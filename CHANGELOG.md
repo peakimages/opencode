@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- OpenCode from v2.3.2 to v2.4.1, see its [release notes](https://github.com/anomalyco/opencode/releases/tag/v2.4.1)
+- OpenCode from v2.3.2 to v2.4.1, see the release notes of [v2.4.0](https://github.com/anomalyco/opencode/releases/tag/v2.4.0) and [v2.4.1](https://github.com/anomalyco/opencode/releases/tag/v2.4.1)
 
 ## [v2.3.2-v0.1.0] - 2026-11-18
 
