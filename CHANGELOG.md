@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [v2.4.1-v0.1.0] - 2026-11-23
+
+### Changed
+
+- OpenCode from v2.3.2 to v2.4.1, see its [release notes](https://github.com/anomalyco/opencode/releases/tag/v2.4.1)
+
 ## [v2.3.2-v0.1.0] - 2026-11-18
 
 ### Changed
