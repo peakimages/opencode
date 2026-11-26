@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [v2.4.1-v0.1.1] - 2026-11-26
+
+### Changed
+
+- gh from v2.104.0 to v2.106.0
+- mise from v2026.11.9 to v2026.11.14
+- zstd from 1.5.7 to 1.6.0
+
 ## [v2.4.1-v0.1.0] - 2026-11-23
 
 ### Changed
