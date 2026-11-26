@@ -40,7 +40,7 @@ ARG TAR_VERSION=1.35-r5
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/xz
 ARG XZ_VERSION=5.8.4-r0
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/zstd
-ARG ZSTD_VERSION=1.5.7-r2
+ARG ZSTD_VERSION=1.6.0-r1
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/unzip
 ARG UNZIP_VERSION=6.0-r16
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/curl
@@ -51,14 +51,14 @@ ARG OPENSSH_VERSION=10.3_p1-r2
 ARG JQ_VERSION=1.8.2-r0
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/make
 ARG MAKE_VERSION=4.4.1-r4
-# https://github.com/cli/cli/releases/tag/v2.104.0
-ARG GITHUB_CLI_VERSION=2.104.0
-ARG GITHUB_CLI_AMD64_SHA256=98cb101ad87dbbd3f6b2f2bfcbd43197ccd07643140121d8a9cfaa91eadbc24e
-ARG GITHUB_CLI_ARM64_SHA256=cb34cefc6f4e77b90731374a2b737516bb8f3033c6ca46aa949e5344f68069e3
-# https://github.com/jdx/mise/releases/tag/v2026.11.9
-ARG MISE_VERSION=2026.11.9
-ARG MISE_AMD64_SHA256=e55de2c37a08a9dfdb3ca95490f90f914b5ef362b62761f1bb2110e5d57210f7
-ARG MISE_ARM64_SHA256=b15e52c9285a07854f4e81ec7e281625b56b0c23e4c0e8a553eb0e06fe4ae0a3
+# https://github.com/cli/cli/releases/tag/v2.106.0
+ARG GITHUB_CLI_VERSION=2.106.0
+ARG GITHUB_CLI_AMD64_SHA256=a476449fa9625413c54a3734eded62e9e480e49f421ff08e7f3b3879c059a033
+ARG GITHUB_CLI_ARM64_SHA256=5e8a0c51e1a8345f36bd0b8bb88604b6a5388df16f3ab3e3b9b6d794fa223a67
+# https://github.com/jdx/mise/releases/tag/v2026.11.14
+ARG MISE_VERSION=2026.11.14
+ARG MISE_AMD64_SHA256=3b2dbc7011bfd96c4b1160db2bca9f0937f226cc61ae5beddfd1fec536e81b2a
+ARG MISE_ARM64_SHA256=7a5252b6a4f30baa96486234e9f217c9f9aaef2343f32b744cd1a54fb4248268
 
 # Set by the build workflow
 ARG IMAGE_VERSION
