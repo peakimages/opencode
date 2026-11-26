@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Set by scripts/check-upstream.sh
-ARG OPENCODE_VERSION=2.4.1
+ARG OPENCODE_VERSION=2.4.2
 # https://hub.docker.com/r/oven/bun/tags?name=1.4.4-alpine
 ARG BUN_IMAGE=oven/bun:1.4.4-alpine@sha256:4cf82f5686b196504fe119db3fcd9185b191f82ece82c40680e597228ec6070a
 
